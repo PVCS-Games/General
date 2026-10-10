@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>周杰伦：用音乐表达故事 — Interactive Chinese Reading</title>
+<style>
+:root{font-family:Arial,"Noto Sans SC","Microsoft YaHei",sans-serif;color:#24354d;background:#f2f6fd}*{box-sizing:border-box}body{margin:0;padding:26px 14px}main{max-width:1020px;margin:auto;background:#fff;border:1px solid #dce5f1;border-radius:18px;box-shadow:0 8px 32px #20304712;overflow:hidden}header{background:#f8fbff;border-bottom:1px solid #dce7f4;padding:24px 28px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px}h1{font-size:26px;color:#17477d;margin:0}.tools{display:flex;flex-wrap:wrap;gap:8px}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #70aaff;outline-offset:2px}.tool{padding:10px 12px;border:1px solid #c9d9eb;border-radius:9px;color:#425a79;background:white}.tool.on{background:#e5f1ff;border-color:#88b7ef;color:#1554a1;font-weight:700}.content{padding:22px 33px 44px}.passage{font-size:27px;line-height:2.7;letter-spacing:.015em;font-family:"KaiTi","Kaiti SC","STKaiti","DFKai-SB",serif}.paragraph{margin:0 0 23px}.unit{border:0;background:none;color:inherit;font:inherit;display:inline;padding:1px 1px;border-radius:3px;line-height:inherit}.unit.vocab{background:linear-gradient(to bottom,transparent 0,transparent 74%,#fff0bd 74%,#fff0bd 92%,transparent 92%,transparent 100%)}.unit.grammar{background:linear-gradient(to bottom,transparent 0,transparent 74%,#dbeaff 74%,#dbeaff 92%,transparent 92%,transparent 100%)}.unit:hover{filter:brightness(.97)}.hide-vocab .unit.vocab,.hide-grammar .unit.grammar{background:none}.hide-pinyin rt{display:none}ruby{ruby-position:over}rt{color:#718096;font:15px Arial,sans-serif;letter-spacing:0;text-align:center}aside{margin:14px 0 26px;border-left:4px solid #4c95dd;background:#eef6ff;border-radius:8px;padding:14px 18px;position:relative}aside[hidden]{display:none}aside strong{font-size:21px}aside p{margin:6px 0 0}.close{position:absolute;right:12px;top:9px;border:0;background:none;font-size:22px;color:#526c8a}.guide{border-top:1px solid #e3eaf5;background:#fcfdff;padding:20px 32px;color:#52647d;font-size:14px;line-height:1.6}.legend{font-size:14px;margin:0 0 20px;color:#70839a}.chip{display:inline-block;border-radius:4px;padding:0 5px;color:#304158}.yellow{background:linear-gradient(to bottom,transparent 0,transparent 74%,#fff0bd 74%,#fff0bd 92%,transparent 92%,transparent 100%)}.blue{background:linear-gradient(to bottom,transparent 0,transparent 74%,#dbeaff 74%,#dbeaff 92%,transparent 92%,transparent 100%)}@media(max-width:620px){header{padding:18px}.content{padding:16px 18px}.passage{font-size:22px;line-height:2.65}rt{font-size:12px}.tool{padding:8px 10px}}
+.english-translation{font-family:Arial,Helvetica,sans-serif;font-size:17px;line-height:1.75;letter-spacing:normal;color:#47627f;background:#f3f7fc;border-left:3px solid #8db3e3;padding:10px 15px;margin:-14px 0 23px;border-radius:0 8px 8px 0}.english-translation[hidden]{display:none}@media(max-width:620px){.english-translation{font-size:15px}}
+/* Floating hover notes remain beside the selected text, not above the passage. */
+.hover-note{position:fixed;z-index:1000;max-width:min(340px,calc(100vw - 24px));min-width:180px;padding:12px 15px;border-radius:10px;background:#fff;box-shadow:0 7px 24px #1e355438;border:1px solid #b9cee6;color:#263a53;font:15px/1.55 Arial,sans-serif;pointer-events:none;overflow-wrap:anywhere}
+.hover-note[hidden]{display:none}.hover-note.vocab-note{border-top:4px solid #e9be4c}.hover-note.grammar-note{border-top:4px solid #83aee8}.hover-note strong{font-family:"KaiTi","Kaiti SC","STKaiti",serif;font-size:21px}.hover-note .pron{font-size:13px;color:#627994;margin-left:6px}.hover-note .definition{margin-top:5px}.unit.vocab,.unit.grammar{cursor:help}
+
+/* Keep slender markers normally; fill the entire Chinese word on hover, focus, or touch selection. */
+.passage:not(.hide-vocab) .unit.vocab:is(:hover,:focus-visible,.is-active){background:#ffe18b;box-shadow:0 0 0 2px #ffe18b;border-radius:4px;filter:none}
+.passage:not(.hide-grammar) .unit.grammar:is(:hover,:focus-visible,.is-active){background:#b9d7ff;box-shadow:0 0 0 2px #b9d7ff;border-radius:4px;filter:none}
+
+/* Read along: underline only the Chinese text of the currently spoken sentence. */
+.reading-sentence.sentence-active .unit{
+ text-decoration-line:underline;
+ text-decoration-color:#239b56;
+ text-decoration-thickness:3px;
+ text-underline-offset:7px;
+ text-decoration-skip-ink:none;
+}
+/* Preserve yellow and blue vocabulary markers and their hover tooltips. */
+.reading-sentence.sentence-active rt{text-decoration:none}
+.passage.hide-vocab .unit.vocab,.passage.hide-grammar .unit.grammar{cursor:text;filter:none;box-shadow:none}
+</style></head><body><main><header><h1 id="essay-title"></h1><nav class="tools" aria-label="Reading controls"><button class="tool on" data-toggle="vocab" aria-pressed="true">Vocabulary</button><button class="tool on" data-toggle="grammar" aria-pressed="true">Grammar</button><button class="tool on" data-toggle="pinyin" aria-pressed="true">Pinyin</button><button class="tool" id="english-toggle" aria-pressed="false">English</button><button class="tool" id="play" aria-pressed="false">▶ Play</button><button class="tool" id="slow" aria-pressed="false">Slow</button></nav></header><div class="content"><p class="legend"><span class="chip yellow">Vocabulary</span> Hover over yellow words for English meanings. <span class="chip blue">Grammar</span> Hover over blue patterns for explanations.</p><article class="passage" id="passage"></article></div><div class="guide">Reading • Pinyin • English • Vocabulary • Grammar • Audio. Play underlines the current Chinese sentence in green while it is spoken. Slow adjusts the speed from the next sentence.</div></main><div id="hover-note" class="hover-note" role="tooltip" hidden><div><strong id="hover-word"></strong><span class="pron" id="hover-pinyin"></span></div><div class="definition" id="hover-definition"></div></div>
+<script>
+/* ==============================================================
+ REUSABLE ESSAY DATA — REPLACE THIS OBJECT FOR EACH NEW ESSAY.
+ Keep the HTML, CSS, and code below unchanged.
+
+ Each paragraph is an array of units:
+ { c:"Chinese", p:"pinyin" }                        normal text
+ { c:"Chinese", p:"pinyin", v:"English meaning" }   vocabulary
+ { c:"Chinese", p:"pinyin", g:"Grammar explanation"} grammar
+ For punctuation: {c:"。"} (no pinyin needed).
+ Multiple units build a paragraph in order, without extra spaces.
+ audioUrl: optional link to a recorded MP3/WAV ("" = browser voice).
+ =============================================================== */
+const ESSAY = {
+  "title": "周杰伦：用音乐表达故事",
+  "audioUrl": "",
+  "paragraphs": [
+    [
+      {
+        "c": "周杰伦",
+        "p": "Zhōu Jiélún",
+        "v": "Jay Chou; Taiwanese singer-songwriter"
+      },
+      {
+        "c": "是",
+        "p": "shì"
+      },
+      {
+        "c": "台湾",
+        "p": "Táiwān",
+        "v": "Taiwan"
+      },
+      {
+        "c": "一位",
+        "p": "yí wèi"
+      },
+      {
+        "c": "有名",
+        "p": "yǒumíng"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "歌手",
+        "p": "gēshǒu",
+        "v": "singer"
+      },
+      {
+        "c": "和",
+        "p": "hé"
+      },
+      {
+        "c": "音乐人",
+        "p": "yīnyuèrén",
+        "v": "musician"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "会",
+        "p": "huì"
+      },
+      {
+        "c": "唱歌",
+        "p": "chànggē"
+      },
+      {
+        "c": "、"
+      },
+      {
+        "c": "写歌",
+        "p": "xiěgē"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "也",
+        "p": "yě"
+      },
+      {
+        "c": "会",
+        "p": "huì"
+      },
+      {
+        "c": "弹钢琴",
+        "p": "tán gāngqín",
+        "v": "play the piano"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "很多人",
+        "p": "hěn duō rén"
+      },
+      {
+        "c": "都",
+        "p": "dōu"
+      },
+      {
+        "c": "喜欢",
+        "p": "xǐhuan"
+      },
+      {
+        "c": "听",
+        "p": "tīng"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "音乐",
+        "p": "yīnyuè"
+      },
+      {
+        "c": "。"
+      }
+    ],
+    [
+      {
+        "c": "周杰伦",
+        "p": "Zhōu Jiélún",
+        "v": "Jay Chou; Taiwanese singer-songwriter"
+      },
+      {
+        "c": "从小",
+        "p": "cóngxiǎo",
+        "v": "since childhood"
+      },
+      {
+        "c": "学习",
+        "p": "xuéxí"
+      },
+      {
+        "c": "钢琴",
+        "p": "gāngqín"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "慢慢",
+        "p": "mànmàn"
+      },
+      {
+        "c": "喜欢上了",
+        "p": "xǐhuan shàng le"
+      },
+      {
+        "c": "音乐",
+        "p": "yīnyuè"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "认真",
+        "p": "rènzhēn"
+      },
+      {
+        "c": "练习",
+        "p": "liànxí"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "也",
+        "p": "yě"
+      },
+      {
+        "c": "尝试",
+        "p": "chángshì",
+        "v": "to try; attempt"
+      },
+      {
+        "c": "写出",
+        "p": "xiěchū"
+      },
+      {
+        "c": "自己",
+        "p": "zìjǐ"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "歌曲",
+        "p": "gēqǔ"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "后来",
+        "p": "hòulái"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "成为",
+        "p": "chéngwéi"
+      },
+      {
+        "c": "歌手",
+        "p": "gēshǒu",
+        "v": "singer"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "让",
+        "p": "ràng",
+        "g": "让 + person + action: to let or cause someone to do something."
+      },
+      {
+        "c": "更多人",
+        "p": "gèng duō rén"
+      },
+      {
+        "c": "听到了",
+        "p": "tīngdào le"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "作品",
+        "p": "zuòpǐn",
+        "v": "creative works"
+      },
+      {
+        "c": "。"
+      }
+    ],
+    [
+      {
+        "c": "周杰伦",
+        "p": "Zhōu Jiélún",
+        "v": "Jay Chou; Taiwanese singer-songwriter"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "音乐",
+        "p": "yīnyuè"
+      },
+      {
+        "c": "有",
+        "p": "yǒu"
+      },
+      {
+        "c": "不同",
+        "p": "bùtóng"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "风格",
+        "p": "fēnggé",
+        "v": "style"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "有的",
+        "p": "yǒude",
+        "g": "有的……有的……: Some… while others…. Used to contrast examples."
+      },
+      {
+        "c": "歌曲",
+        "p": "gēqǔ"
+      },
+      {
+        "c": "节奏",
+        "p": "jiézòu",
+        "v": "rhythm; beat"
+      },
+      {
+        "c": "很快",
+        "p": "hěn kuài"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "让人",
+        "p": "ràng rén",
+        "g": "让 + person + verb/adjective: to make someone feel or do something."
+      },
+      {
+        "c": "想",
+        "p": "xiǎng"
+      },
+      {
+        "c": "跟着",
+        "p": "gēnzhe"
+      },
+      {
+        "c": "唱",
+        "p": "chàng"
+      },
+      {
+        "c": "；"
+      },
+      {
+        "c": "有的",
+        "p": "yǒude",
+        "g": "有的……有的……: Some… while others…. Used to contrast examples."
+      },
+      {
+        "c": "旋律",
+        "p": "xuánlǜ",
+        "v": "melody"
+      },
+      {
+        "c": "温柔",
+        "p": "wēnróu",
+        "v": "gentle"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "让人",
+        "p": "ràng rén",
+        "g": "让 + person + verb/adjective: to make someone feel or do something."
+      },
+      {
+        "c": "觉得",
+        "p": "juéde"
+      },
+      {
+        "c": "平静",
+        "p": "píngjìng",
+        "v": "calm; peaceful"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "常常",
+        "p": "chángcháng"
+      },
+      {
+        "c": "把",
+        "p": "bǎ",
+        "g": "把 + object + verb: emphasizes what is done to the object. Here music styles are put together."
+      },
+      {
+        "c": "中国",
+        "p": "Zhōngguó"
+      },
+      {
+        "c": "传统音乐",
+        "p": "chuántǒng yīnyuè",
+        "v": "traditional music"
+      },
+      {
+        "c": "和",
+        "p": "hé"
+      },
+      {
+        "c": "现代音乐",
+        "p": "xiàndài yīnyuè",
+        "v": "modern music"
+      },
+      {
+        "c": "放在一起",
+        "p": "fàng zài yìqǐ"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "创造出",
+        "p": "chuàngzào chū",
+        "v": "to create"
+      },
+      {
+        "c": "特别",
+        "p": "tèbié"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "声音",
+        "p": "shēngyīn"
+      },
+      {
+        "c": "。"
+      }
+    ],
+    [
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "歌曲",
+        "p": "gēqǔ"
+      },
+      {
+        "c": "也",
+        "p": "yě"
+      },
+      {
+        "c": "有",
+        "p": "yǒu"
+      },
+      {
+        "c": "不同",
+        "p": "bùtóng"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "主题",
+        "p": "zhǔtí",
+        "v": "theme; topic"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "有的",
+        "p": "yǒude",
+        "g": "有的……有的……: Some… while others…. Used to contrast examples."
+      },
+      {
+        "c": "讲",
+        "p": "jiǎng"
+      },
+      {
+        "c": "爱情",
+        "p": "àiqíng",
+        "v": "romantic love"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "有的",
+        "p": "yǒude",
+        "g": "有的……有的……: Some… while others…. Used to contrast examples."
+      },
+      {
+        "c": "讲",
+        "p": "jiǎng"
+      },
+      {
+        "c": "青春",
+        "p": "qīngchūn",
+        "v": "youth"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "还有的",
+        "p": "hái yǒude",
+        "g": "还有的……: still others…; adds another group of examples."
+      },
+      {
+        "c": "介绍",
+        "p": "jièshào"
+      },
+      {
+        "c": "中国文化",
+        "p": "Zhōngguó wénhuà",
+        "v": "Chinese culture"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "例如",
+        "p": "lìrú",
+        "g": "例如: for example; introduces a specific example."
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "《青花瓷》",
+        "p": "Qīnghuācí",
+        "v": "Blue and White Porcelain (song title)"
+      },
+      {
+        "c": "让人",
+        "p": "ràng rén",
+        "g": "让 + person + verb/adjective: to make someone feel or do something."
+      },
+      {
+        "c": "想到",
+        "p": "xiǎngdào"
+      },
+      {
+        "c": "美丽",
+        "p": "měilì"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "瓷器",
+        "p": "cíqì",
+        "v": "porcelain"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "《稻香》",
+        "p": "Dàoxiāng",
+        "v": "Rice Field (song title)"
+      },
+      {
+        "c": "鼓励",
+        "p": "gǔlì",
+        "v": "to encourage"
+      },
+      {
+        "c": "人们",
+        "p": "rénmen"
+      },
+      {
+        "c": "珍惜",
+        "p": "zhēnxī",
+        "v": "to cherish"
+      },
+      {
+        "c": "生活中",
+        "p": "shēnghuó zhōng"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "快乐",
+        "p": "kuàilè"
+      },
+      {
+        "c": "。"
+      }
+    ],
+    [
+      {
+        "c": "周杰伦",
+        "p": "Zhōu Jiélún",
+        "v": "Jay Chou; Taiwanese singer-songwriter"
+      },
+      {
+        "c": "也",
+        "p": "yě"
+      },
+      {
+        "c": "用",
+        "p": "yòng"
+      },
+      {
+        "c": "歌曲",
+        "p": "gēqǔ"
+      },
+      {
+        "c": "表达",
+        "p": "biǎodá",
+        "v": "to express"
+      },
+      {
+        "c": "对",
+        "p": "duì"
+      },
+      {
+        "c": "家人",
+        "p": "jiārén"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "感情",
+        "p": "gǎnqíng",
+        "v": "feelings; emotions"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "《听妈妈的话》",
+        "p": "Tīng Māma de Huà",
+        "v": "Listen to Mom (song title)"
+      },
+      {
+        "c": "提醒",
+        "p": "tíxǐng",
+        "v": "to remind"
+      },
+      {
+        "c": "大家",
+        "p": "dàjiā"
+      },
+      {
+        "c": "关心",
+        "p": "guānxīn",
+        "v": "to care for"
+      },
+      {
+        "c": "妈妈",
+        "p": "māma"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "感谢",
+        "p": "gǎnxiè",
+        "v": "to thank"
+      },
+      {
+        "c": "妈妈",
+        "p": "māma"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "爱",
+        "p": "ài"
+      },
+      {
+        "c": "。"
+      }
+    ],
+    [
+      {
+        "c": "周杰伦",
+        "p": "Zhōu Jiélún",
+        "v": "Jay Chou; Taiwanese singer-songwriter"
+      },
+      {
+        "c": "不但",
+        "p": "búdàn",
+        "g": "不但……而且……: not only… but also…; adds another important effect."
+      },
+      {
+        "c": "用",
+        "p": "yòng"
+      },
+      {
+        "c": "音乐",
+        "p": "yīnyuè"
+      },
+      {
+        "c": "表达",
+        "p": "biǎodá",
+        "v": "to express"
+      },
+      {
+        "c": "自己",
+        "p": "zìjǐ"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "想法",
+        "p": "xiǎngfǎ",
+        "v": "thoughts; ideas"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "而且",
+        "p": "érqiě",
+        "g": "而且: moreover; the second half of 不但……而且……."
+      },
+      {
+        "c": "让",
+        "p": "ràng",
+        "g": "让 + person + action: to let or cause someone to do something."
+      },
+      {
+        "c": "更多",
+        "p": "gèng duō"
+      },
+      {
+        "c": "年轻人",
+        "p": "niánqīngrén"
+      },
+      {
+        "c": "对",
+        "p": "duì"
+      },
+      {
+        "c": "中国文化",
+        "p": "Zhōngguó wénhuà",
+        "v": "Chinese culture"
+      },
+      {
+        "c": "产生",
+        "p": "chǎnshēng"
+      },
+      {
+        "c": "兴趣",
+        "p": "xìngqù",
+        "v": "interest"
+      },
+      {
+        "c": "。"
+      },
+      {
+        "c": "他",
+        "p": "tā"
+      },
+      {
+        "c": "的",
+        "p": "de"
+      },
+      {
+        "c": "歌曲",
+        "p": "gēqǔ"
+      },
+      {
+        "c": "让人",
+        "p": "ràng rén",
+        "g": "让 + person + verb/adjective: to make someone feel or do something."
+      },
+      {
+        "c": "感受到",
+        "p": "gǎnshòu",
+        "g": "感受到: to feel or experience; 到 indicates the result is reached."
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "音乐",
+        "p": "yīnyuè"
+      },
+      {
+        "c": "可以",
+        "p": "kěyǐ",
+        "g": "可以……也可以……: can… and can also…; describes two abilities."
+      },
+      {
+        "c": "讲故事",
+        "p": "jiǎng gùshi"
+      },
+      {
+        "c": "，"
+      },
+      {
+        "c": "也",
+        "p": "yě"
+      },
+      {
+        "c": "可以",
+        "p": "kěyǐ",
+        "g": "可以……也可以……: can… and can also…; describes two abilities."
+      },
+      {
+        "c": "传递",
+        "p": "chuándì",
+        "v": "to convey; communicate"
+      },
+      {
+        "c": "感情",
+        "p": "gǎnqíng",
+        "v": "feelings; emotions"
+      },
+      {
+        "c": "。"
+      }
+    ]
+  ]
+};
+const ENGLISH_PARAGRAPHS = [
+  "Jay Chou is a famous singer and musician from Taiwan. He can sing, write songs, and play the piano. Many people enjoy listening to his music.",
+  "Jay Chou learned piano from a young age and gradually grew to love music. He practiced seriously and also tried writing his own songs. Later, he became a singer, allowing more people to hear his work.",
+  "Jay Chou’s music has different styles. Some songs have fast rhythms that make people want to sing along; others have gentle melodies that make people feel calm. He often combines traditional Chinese music with modern music to create a special sound.",
+  "His songs also explore different themes. Some are about love, some about youth, and others introduce Chinese culture. For example, “Blue and White Porcelain” brings beautiful porcelain to mind, while “Rice Field” encourages people to cherish the happiness in everyday life.",
+  "Jay Chou also uses songs to express his feelings for his family. “Listen to Mom” reminds everyone to care about their mothers and appreciate their love.",
+  "Jay Chou not only uses music to express his ideas, but also inspires more young people to become interested in Chinese culture. His songs show that music can tell stories and communicate emotions."
+];
+/* =================== END ESSAY DATA ====================== */
+const passage=document.querySelector('#passage');
+const fullText=ESSAY.paragraphs.map(p=>p.map(u=>u.c).join('')).join('\n');
+document.querySelector('#essay-title').textContent=ESSAY.title;
+const readingSentences=[];
+for(const [index, paragraph] of ESSAY.paragraphs.entries()){
+ const p=document.createElement('p');p.className='paragraph';
+ let sentence=document.createElement('span');sentence.className='reading-sentence';
+ let sentenceText='';
+ function finishSentence(){
+  if(!sentence.childNodes.length)return;
+  sentence.dataset.text=sentenceText;
+  readingSentences.push({node:sentence,text:sentenceText});
+  p.append(sentence);
+  sentence=document.createElement('span');sentence.className='reading-sentence';sentenceText='';
+ }
+ for(const u of paragraph){
+  const highlighted=!!(u.v||u.g);
+  const el=document.createElement(highlighted?'button':'span');
+  el.classList.add('unit');
+  if(highlighted){
+   el.type='button';el.className='unit '+(u.v?'vocab':'grammar');
+   el.setAttribute('aria-label',u.c+': '+(u.v||u.g));
+   el.addEventListener('mouseenter',()=>showHover(el,u));
+   el.addEventListener('mouseleave',hideHover);
+   el.addEventListener('focus',()=>showHover(el,u));
+   el.addEventListener('blur',hideHover);
+   el.addEventListener('click',event=>{event.stopPropagation();if(activeHover===el&&!hoverNote.hidden){hideHover();el.blur();}else showHover(el,u);});
+  }
+  if(u.p){const ruby=document.createElement('ruby');ruby.append(document.createTextNode(u.c));const rt=document.createElement('rt');rt.textContent=u.p;ruby.append(rt);el.append(ruby);} else el.textContent=u.c;
+  sentence.append(el);sentenceText+=u.c;
+  // Group complete sentences; keep natural punctuation and word formatting.
+  if(/[。！？!?][”’」』）)]?$/.test(u.c))finishSentence();
+ }
+ finishSentence();
+ passage.append(p);
+ const translation=document.createElement('p');translation.className='english-translation';translation.lang='en';translation.hidden=true;translation.textContent=ENGLISH_PARAGRAPHS[index]||'';passage.append(translation);
+}
+const hoverNote=document.querySelector('#hover-note');
+let activeHover=null;
+function hideHover(){if(activeHover)activeHover.classList.remove("is-active");hoverNote.hidden=true;activeHover=null;}
+function showHover(el,u){
+ const type=u.v?'vocab':'grammar';
+ if(passage.classList.contains('hide-'+type)){hideHover();return;}
+ hoverNote.className='hover-note '+type+'-note';
+ document.querySelector('#hover-word').textContent=u.c;
+ document.querySelector('#hover-pinyin').textContent=u.p||'';
+ document.querySelector('#hover-definition').textContent=u.v||u.g;
+ if(activeHover&&activeHover!==el)activeHover.classList.remove("is-active");
+ hoverNote.hidden=false;activeHover=el;el.classList.add("is-active");
+ positionHover();
+}
+function positionHover(){
+ if(!activeHover||hoverNote.hidden)return;
+ const target=activeHover.getBoundingClientRect();
+ const width=hoverNote.offsetWidth,height=hoverNote.offsetHeight,gap=9,pad=12;
+ let left=Math.max(pad,Math.min(target.left+(target.width-width)/2,innerWidth-width-pad));
+ let top=target.bottom+gap;
+ if(top+height>innerHeight-pad && target.top-height-gap>=pad)top=target.top-height-gap;
+ else top=Math.min(top,Math.max(pad,innerHeight-height-pad));
+ hoverNote.style.left=left+'px';hoverNote.style.top=top+'px';
+}
+window.addEventListener('scroll',positionHover,{passive:true});
+window.addEventListener('resize',positionHover);
+document.addEventListener('pointerdown',event=>{if(!event.target.closest('.unit.vocab,.unit.grammar'))hideHover();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')hideHover();});
+const englishToggle=document.querySelector('#english-toggle');
+englishToggle.addEventListener('click',()=>{const visible=englishToggle.classList.toggle('on');englishToggle.setAttribute('aria-pressed',String(visible));for(const tr of passage.querySelectorAll('.english-translation'))tr.hidden=!visible;});
+for(const btn of document.querySelectorAll('[data-toggle]')){btn.addEventListener('click',()=>{
+ let on=btn.classList.toggle('on');btn.setAttribute('aria-pressed',String(on));
+ passage.classList.toggle('hide-'+btn.dataset.toggle,!on);
+ if(!on && (btn.dataset.toggle==='vocab'||btn.dataset.toggle==='grammar')){
+  if(activeHover && activeHover.classList.contains(btn.dataset.toggle))hideHover();
+ }
+});}
+const audio=ESSAY.audioUrl?new Audio(ESSAY.audioUrl):null;
+let speaking=false,session=0,activeRead=null;
+const play=document.querySelector('#play'),slow=document.querySelector('#slow');
+function markReading(node){
+ if(activeRead)activeRead.classList.remove('sentence-active');
+ activeRead=node||null;
+ if(node){node.classList.add('sentence-active');
+  const rect=node.getBoundingClientRect();
+  if(rect.top<80||rect.bottom>innerHeight-45)node.scrollIntoView({block:'center',behavior:'smooth'});
+ }
+}
+function stopped(){speaking=false;markReading(null);play.textContent='▶ Play';play.classList.remove('on');play.setAttribute('aria-pressed','false');}
+function stopAudio(){++session;if(audio){audio.pause();audio.currentTime=0;}if('speechSynthesis' in window)window.speechSynthesis.cancel();stopped();}
+function speakSentence(id,index=0){
+ if(id!==session||!speaking)return;
+ if(index>=readingSentences.length){stopped();return;}
+ const {node,text}=readingSentences[index];
+ markReading(node);
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang='zh-CN';
+ utterance.rate=slow.classList.contains('on')?.72:1;
+ utterance.onend=()=>{if(id===session)speakSentence(id,index+1);};
+ utterance.onerror=event=>{
+  if(id!==session)return;
+  if(event.error==='canceled'||event.error==='interrupted')return;
+  speakSentence(id,index+1);
+ };
+ window.speechSynthesis.speak(utterance);
+}
+play.addEventListener('click',()=>{
+ if(speaking){stopAudio();return;}
+ stopAudio();
+ if(!('speechSynthesis' in window)){
+  if(audio){speaking=true;play.textContent='■ Stop';play.classList.add('on');audio.playbackRate=slow.classList.contains('on')?.75:1;audio.onended=stopped;audio.play().catch(()=>{stopped();alert('Unable to load the recording.');});}
+  else alert('This browser does not support speech playback.');
+  return;
+ }
+ speaking=true;play.textContent='■ Stop';play.classList.add('on');play.setAttribute('aria-pressed','true');
+ speakSentence(session);
+});
+slow.addEventListener('click',()=>{
+ const on=slow.classList.toggle('on');slow.setAttribute('aria-pressed',String(on));
+ if(audio)audio.playbackRate=on?.75:1;
+ // The next sentence uses the newly selected reading speed.
+});
+window.addEventListener('pagehide',()=>{if(speaking)stopAudio();});
+</script></body></html>
